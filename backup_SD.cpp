@@ -75,7 +75,6 @@ void runPumps()
 {
   digitalWrite(pumpRelayOne, HIGH);
   digitalWrite(pumpRelayTwo, HIGH);
-  Serial.println("Pumps running!");
 
   // Read temperature and humidity
   float h = dht.readHumidity();
@@ -85,11 +84,10 @@ void runPumps()
   myFile = sd.open("data.txt", FILE_WRITE);
   if (myFile)
   {
-    myFile.print("Pump Run - ");
-    myFile.print("Humidity: ");
+    myFile.print("Pump Run: ");
     myFile.print(h);
     myFile.print("%, ");
-    myFile.print("Temperature: ");
+    myFile.print("Temp: ");
     myFile.println(f);
     myFile.close();
   }
@@ -106,22 +104,33 @@ void runPumps()
 
 void checkTemps(float humidity, float temperature)
 {
-  Serial.print("Evening - ");
-  Serial.print(humidity);
-  Serial.print("% ");
-  Serial.print(temperature);
-  Serial.println(F(" °F"));
+  // Serial.print("Evening - ");
+  // Serial.print(humidity);
+  // Serial.print("% ");
+  // Serial.print(temperature);
+  // Serial.println(F(" °F"));
 
   // Save data to SD card
   myFile = sd.open("data.txt", FILE_WRITE);
   if (myFile)
   {
-    myFile.print("Evening Check - ");
-    myFile.print("Humidity: ");
+    myFile.print("2pm: ");
     myFile.print(humidity);
     myFile.print("%, ");
-    myFile.print("Temperature: ");
+    myFile.print("Temp: ");
     myFile.println(temperature);
+    myFile.println(); // Add a newline for clarity
+
+    // Save data for the second evening check
+    float secondHumidity = dht.readHumidity();
+    float secondTemperature = dht.readTemperature(true);
+    
+    myFile.print("10pm: ");
+    myFile.print(secondHumidity);
+    myFile.print("%, ");
+    myFile.print("Temp: ");
+    myFile.println(secondTemperature);
+    
     myFile.close();
   }
   else
@@ -129,3 +138,4 @@ void checkTemps(float humidity, float temperature)
     Serial.println(F("Error opening file for writing"));
   }
 }
+
