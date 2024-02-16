@@ -113,9 +113,13 @@ void runPumps()
   digitalWrite(pumpRelayOne, LOW);  // Turn off the pumps
   digitalWrite(pumpRelayTwo, LOW);
 
-  // Adjust the time to run the pumps the following day at 6 am
-  setTime(6, 0, 0, day() + 1, month(), year());
+  // Calculate the time for the next pump run (18 hours later)
+  setTime(hour() + 18, minute(), second(), day(), month(), year());
+
+  // Save the current time for the next evening check
+  previousEveningMillis = millis();
 }
+
 
 void checkTemps(float humidity, float temperature)
 {
