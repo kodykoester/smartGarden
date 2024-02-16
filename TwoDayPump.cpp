@@ -1,5 +1,4 @@
 #include <DHT.h>
-#include <TimeLib.h>
 #include <SdFat.h>
 
 #define DHTPIN 2
@@ -26,14 +25,13 @@ bool stopProgram = false;  // Variable to control program exit
 void setup()
 {
   Serial.begin(115200);      // Start serial communication
-  setTime(6, 0, 0, 2, 23, 2024); // Set initial date and time (replace these values with your desired date and time)
 
   pinMode(pumpRelayOne, OUTPUT);
   pinMode(pumpRelayTwo, OUTPUT);
   digitalWrite(pumpRelayOne, LOW);
   digitalWrite(pumpRelayTwo, LOW);
   dht.begin();             // Sensor Start
-
+ 
   // Barebones SD initialization
   if (!sd.begin(SD_CS_PIN))
   {
@@ -45,30 +43,26 @@ void setup()
 void loop()
 {
   unsigned long currentMillis = millis(); // Get the current time
-  float h = dht.readHumidity();          // Sensor readings may also be up to 2 seconds 'old' (it's a very slow sensor)
-  float f = dht.readTemperature(true);   // Read temperature as Fahrenheit (isFahrenheit = true)
 
-  // Check if two days have passed
-  if (currentMillis - previousMorningMillis >= morningInterval)
+  // Check if two days have passed to run pumps
+  if (currentMillis - previousMorningMillis >= morningInterval && daysCounter < 7 && !stopProgram)
   {
+    runPumps();
     previousMorningMillis = currentMillis; // Save the current time
-    runPumps();                            // Run the pumps function
-    daysCounter += 2;                      // Increment the days counter by 2 since we want to run pumps every two days
-
-    // Check if 7 days have passed
-    if (daysCounter >= 7)
-    {
-      Serial.println("Program will now end and shut down gracefully.");
-      exit(EXIT_SUCCESS);  // Use exit() to end the program gracefully
-    }
+    daysCounter++; // Increment the days counter
   }
 
-  // Check if it's time for the evening check
-  if (currentMillis - previousEveningMillis >= eveningInterval)
+  // Check if 8 hours have passed for continuous temperature and humidity checks
+  if (currentMillis - previousEveningMillis >= eveningInterval && !stopProgram)
   {
-    previousEveningMillis = currentMillis; // Save the current time for the evening check
-    checkTemps(h, f);                      // Run the checkTemps function in the evening
+    float h = dht.readHumidity();          // Sensor readings may also be up to 2 seconds 'old' (it's a very slow sensor)
+    float f = dht.readTemperature(true);   // Read temperature as Fahrenheit (isFahrenheit = true)
+    checkTemps(h, f);
+    previousEveningMillis = currentMillis; // Save the current time
   }
+
+  // Add a delay to reduce loop frequency
+  delay(1000);
 }
 
 void runPumps()
@@ -119,8 +113,7 @@ void checkTemps(float humidity, float temperature)
     myFile.print("%, ");
     myFile.print("Temp: ");
     myFile.println(temperature);
-    myFile.println(); // Add a newline for clarity
-
+    
     // Save data for the second evening check
     float secondHumidity = dht.readHumidity();
     float secondTemperature = dht.readTemperature(true);
