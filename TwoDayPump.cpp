@@ -31,38 +31,54 @@ void setup()
   digitalWrite(pumpRelayOne, LOW);
   digitalWrite(pumpRelayTwo, LOW);
   dht.begin();             // Sensor Start
- 
+
   // Barebones SD initialization
   if (!sd.begin(SD_CS_PIN))
   {
     Serial.println(F("SD initialization failed!"));
     exit(EXIT_FAILURE);
   }
+
+  // Log initial temperature and humidity check
+  float initialHumidity = dht.readHumidity();
+  float initialTemperature = dht.readTemperature(true);
+  logData("Initial Check", initialHumidity, initialTemperature);
 }
 
 void loop()
 {
   unsigned long currentMillis = millis(); // Get the current time
+  float h = dht.readHumidity();          // Sensor readings may also be up to 2 seconds 'old' (it's a very slow sensor)
+  float f = dht.readTemperature(true);   // Read temperature as Fahrenheit (isFahrenheit = true)
 
-  // Check if two days have passed to run pumps
-  if (currentMillis - previousMorningMillis >= morningInterval && daysCounter < 7 && !stopProgram)
+  // Check if it's noon to start the temperature and humidity checks
+  if ((currentMillis / 1000) % 86400 == 43200) // Check if it's noon (12:00:00) in seconds
   {
-    runPumps();
+    previousEveningMillis = currentMillis; // Save the current time for the evening check
+    checkTemps(h, f);                      // Run the checkTemps function at noon
+  }
+
+  // Check if two days have passed after noon
+  if (currentMillis - previousMorningMillis >= morningInterval && (currentMillis / 1000) % 86400 == 43200)
+  {
     previousMorningMillis = currentMillis; // Save the current time
-    daysCounter++; // Increment the days counter
+    runPumps();                            // Run the pumps function
+    daysCounter += 2;                      // Increment the days counter by 2 since we want to run pumps every two days
+
+    // Check if 8 days have passed
+    if (daysCounter >= 8)
+    {
+      Serial.println("Program will now end and shut down gracefully.");
+      exit(EXIT_SUCCESS);  // Use exit() to end the program gracefully
+    }
   }
 
-  // Check if 8 hours have passed for continuous temperature and humidity checks
-  if (currentMillis - previousEveningMillis >= eveningInterval && !stopProgram)
+  // Check if it's time for the evening check
+  if (currentMillis - previousEveningMillis >= eveningInterval)
   {
-    float h = dht.readHumidity();          // Sensor readings may also be up to 2 seconds 'old' (it's a very slow sensor)
-    float f = dht.readTemperature(true);   // Read temperature as Fahrenheit (isFahrenheit = true)
-    checkTemps(h, f);
-    previousEveningMillis = currentMillis; // Save the current time
+    previousEveningMillis = currentMillis; // Save the current time for the evening check
+    checkTemps(h, f);                      // Run the checkTemps function in the evening
   }
-
-  // Add a delay to reduce loop frequency
-  delay(1000);
 }
 
 void runPumps()
@@ -94,6 +110,9 @@ void runPumps()
 
   digitalWrite(pumpRelayOne, LOW);  // Turn off the pumps
   digitalWrite(pumpRelayTwo, LOW);
+
+  // Calculate the time for the next pump run (18 hours later)
+  previousEveningMillis = millis();
 }
 
 void checkTemps(float humidity, float temperature)
@@ -113,7 +132,8 @@ void checkTemps(float humidity, float temperature)
     myFile.print("%, ");
     myFile.print("Temp: ");
     myFile.println(temperature);
-    
+    myFile.println(); // Add a newline for clarity
+
     // Save data for the second evening check
     float secondHumidity = dht.readHumidity();
     float secondTemperature = dht.readTemperature(true);
@@ -124,6 +144,25 @@ void checkTemps(float humidity, float temperature)
     myFile.print("Temp: ");
     myFile.println(secondTemperature);
     
+    myFile.close();
+  }
+  else
+  {
+    Serial.println(F("Error opening file for writing"));
+  }
+}
+
+void logData(const char *timestamp, float humidity, float temperature)
+{
+  myFile = sd.open("data.txt", FILE_WRITE);
+  if (myFile)
+  {
+    myFile.print(timestamp);
+    myFile.print(": ");
+    myFile.print(humidity);
+    myFile.print("%, ");
+    myFile.print("Temp: ");
+    myFile.println(temperature);
     myFile.close();
   }
   else
