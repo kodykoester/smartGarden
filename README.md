@@ -9,9 +9,6 @@ This Arduino code is designed for an automated greenhouse system that monitors t
 - SdFat library for SD card interfacing
 - Two relays for controlling water pumps
 - Adafruit Metro RP2040 board
-- Photoresistors (future scope)
-- Raspberry Pi (future scope)
-- MongoDB connection (future scope)
 
 ## Wiring
 - DHT22 sensor connected to pin 2
