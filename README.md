@@ -1,19 +1,45 @@
-# Metro RP2040 Garden Automation
+# Automated Greenhouse System
 
-This minimalistic Arduino project utilizes the Adafruit Metro RP2040 to automate garden care tasks based on environmental conditions. The code includes functionalities for reading temperature and humidity using a DHT22 sensor, running water pumps at specific intervals, and logging data to an SD card.
+This Arduino code is designed for an automated greenhouse system that monitors temperature and humidity using a DHT22 sensor and logs the data to an SD card. Additionally, the system controls water pumps to irrigate the plants based on specific intervals.
 
-## Dependencies
-- [DHT sensor library](https://github.com/adafruit/DHT-sensor-library)
-- [SdFat library](https://github.com/greiman/SdFat)
+## Components Used
+- DHT22 sensor for temperature and humidity readings
+- SdFat library for SD card interfacing
+- Two relays for controlling water pumps
+- Arduino board with SD card slot
 
-## Hardware Requirements
+## Wiring
 - DHT22 sensor connected to pin 2
-- Two relays connected to pins 7 and 13 for controlling water pumps
-- SD card module connected to pin 23
+- SD card connected to pin 23
+- Relay for Pump 1 connected to pin 7
+- Relay for Pump 2 connected to pin 13
 
 ## Functionality
-- The program runs water pumps once a day in the morning and performs an evening temperature check every 8 hours.
-- Data, including pump run details and evening temperature readings, is logged to an SD card in "data.txt".
 
-**Tested on Adafruit Metro RP2040.**
+### Sensor Initialization
+The code initializes the DHT22 sensor and the SD card, logging the initial temperature and humidity readings to the SD card.
 
+### Main Loop
+The main loop continuously monitors the current time and performs the following actions:
+
+1. **Temperature and Humidity Checks (Noon)**
+   - At noon, the system performs temperature and humidity checks and logs the data to the SD card.
+
+2. **Pump Activation (Every 2 Days)**
+   - Every two days, the water pumps are activated, and the corresponding data is logged to the SD card.
+
+3. **Program Exit (After 8 Days)**
+   - If eight days have passed, the program gracefully exits, shutting down the system.
+
+4. **Evening Temperature and Humidity Checks**
+   - In the evening, the system performs additional temperature and humidity checks and logs the data to the SD card.
+
+### Functions
+- `runPumps()`: Activates water pumps, logs data, and calculates the time for the next pump run.
+- `checkTemps(float humidity, float temperature)`: Performs evening temperature and humidity checks and logs the data.
+- `logData(const char *timestamp, float humidity, float temperature)`: Logs timestamped temperature and humidity data.
+
+## Usage
+1. Connect the components as per the provided wiring.
+2. Upload the code to your Arduino board.
+3. Monitor the greenhouse environment using the logged data on the SD card.
