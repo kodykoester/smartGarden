@@ -24,8 +24,8 @@ The code initializes the DHT22 sensor and the SD card, logging the initial tempe
 ### Main Loop
 The main loop continuously monitors the current time and performs the following actions:
 
-1. **Temperature and Humidity Checks (Noon)**
-   - At noon, the system performs temperature and humidity checks and logs the data to the SD card.
+1. **Temperature and Humidity Checks (8hrs)**
+   - Every 8 hours, the system performs temperature and humidity checks and logs the data to the SD card.
 
 2. **Pump Activation (Every 2 Days)**
    - Every two days, the water pumps are activated, and the corresponding data is logged to the SD card.
