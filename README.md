@@ -4,7 +4,6 @@ This minimalistic Arduino project utilizes the Adafruit Metro RP2040 to automate
 
 ## Dependencies
 - [DHT sensor library](https://github.com/adafruit/DHT-sensor-library)
-- [Time library](https://github.com/PaulStoffregen/Time)
 - [SdFat library](https://github.com/greiman/SdFat)
 
 ## Hardware Requirements
