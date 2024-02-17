@@ -106,7 +106,7 @@ void runPumps()
     Serial.println(F("Error opening file for writing"));
   }
 
-  delay(20000);
+  delay(60000);
 
   digitalWrite(pumpRelayOne, LOW);  // Turn off the pumps
   digitalWrite(pumpRelayTwo, LOW);
