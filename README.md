@@ -2,11 +2,16 @@
 
 This Arduino code is designed for an automated greenhouse system that monitors temperature and humidity using a DHT22 sensor and logs the data to an SD card. Additionally, the system controls water pumps to irrigate the plants based on specific intervals.
 
+**Current Board:** Adafruit Metro RP2040
+
 ## Components Used
 - DHT22 sensor for temperature and humidity readings
 - SdFat library for SD card interfacing
 - Two relays for controlling water pumps
-- Arduino board with SD card slot
+- Adafruit Metro RP2040 board
+- Photoresistors (future scope)
+- Raspberry Pi (future scope)
+- MongoDB connection (future scope)
 
 ## Wiring
 - DHT22 sensor connected to pin 2
@@ -22,8 +27,8 @@ The code initializes the DHT22 sensor and the SD card, logging the initial tempe
 ### Main Loop
 The main loop continuously monitors the current time and performs the following actions:
 
-1. **Temperature and Humidity Checks (8hrs)**
-   - Every 8 hours, the system performs temperature and humidity checks and logs the data to the SD card.
+1. **Temperature and Humidity Checks (Noon)**
+   - At noon, the system performs temperature and humidity checks and logs the data to the SD card.
 
 2. **Pump Activation (Every 2 Days)**
    - Every two days, the water pumps are activated, and the corresponding data is logged to the SD card.
@@ -41,5 +46,15 @@ The main loop continuously monitors the current time and performs the following 
 
 ## Usage
 1. Connect the components as per the provided wiring.
-2. Upload the code to your Arduino board.
+2. Upload the code to your Adafruit Metro RP2040 board.
 3. Monitor the greenhouse environment using the logged data on the SD card.
+
+## Future Scope
+- **Photoresistors for Light Intensity Measurements:**
+  - Enhance the system with photoresistors to measure precise light intensity for better plant care.
+
+- **Raspberry Pi Integration for Web Application UI and Remote Control Access:**
+  - Incorporate a Raspberry Pi for creating a web application UI and enabling remote control access to the greenhouse system.
+
+- **MongoDB Connection for Cloud Data Storage:**
+  - Implement MongoDB connection to enable cloud data storage for comprehensive analysis and monitoring.
