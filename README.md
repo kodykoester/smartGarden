@@ -12,19 +12,9 @@ This minimalistic Arduino project utilizes the Adafruit Metro RP2040 to automate
 - Two relays connected to pins 7 and 13 for controlling water pumps
 - SD card module connected to pin 23
 
-## Setup
-1. Install the required libraries.
-2. Adjust pin configurations and initial date/time in the `setup()` function.
-3. Upload the code to your Adafruit Metro RP2040.
-
 ## Functionality
 - The program runs water pumps once a day in the morning and performs an evening temperature check every 8 hours.
 - Data, including pump run details and evening temperature readings, is logged to an SD card in "data.txt".
 
-### Notes
-- Replace initial date and time values in `setTime()` with your desired starting point.
-- The program gracefully exits after running for 7 days.
-
 **Tested on Adafruit Metro RP2040.**
 
-Feel free to customize the code for your specific garden automation needs.
