@@ -8,7 +8,7 @@ DHT dht(DHTPIN, DHTTYPE);
 #define SD_FAT_TYPE 1
 #define SD_CS_PIN 23
 SdFat sd;
-File32 myFile;
+FsFile myFile;
 
 const int pumpRelayOne = 7;
 const int pumpRelayTwo = 13;
@@ -71,7 +71,7 @@ void runPumps() {
   digitalWrite(pumpRelayTwo, HIGH);
 
   float h = dht.readHumidity();
-  float f = dht.readTemperature(true);
+  float temp = dht.readTemperature(true);
 
   myFile = sd.open("data.txt", FILE_WRITE);
   if (myFile) {
@@ -79,13 +79,13 @@ void runPumps() {
     myFile.print(h);
     myFile.print("%, ");
     myFile.print("Temp: ");
-    myFile.println(f);
+    myFile.println(temp);
     myFile.close();
   } else {
     Serial.println(F("Error opening file for writing"));
   }
 
-  delay(60000);
+  delay(75000);
 
   digitalWrite(pumpRelayOne, LOW);
   digitalWrite(pumpRelayTwo, LOW);
