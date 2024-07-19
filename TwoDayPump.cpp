@@ -5,7 +5,6 @@
 #define DHTTYPE DHT22
 DHT dht(DHTPIN, DHTTYPE);
 
-#define SD_FAT_TYPE 1
 #define SD_CS_PIN 23
 SdFat sd;
 FsFile myFile;
@@ -33,7 +32,7 @@ void setup() {
 
   if (!sd.begin(SD_CS_PIN)) {
     Serial.println(F("SD initialization failed!"));
-    exit(EXIT_FAILURE);
+    while (true); // Stay here forever if the SD card initialization fails
   }
 
   float initialHumidity = dht.readHumidity();
@@ -55,7 +54,7 @@ void loop() {
     // Check if 8 days have passed
     if (daysCounter >= 8) {
       Serial.println("Program will now end and shut down gracefully.");
-      exit(EXIT_SUCCESS);
+      while (true); // Stay here forever to halt the program
     }
   }
 
